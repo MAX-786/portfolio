@@ -4,6 +4,7 @@ import "./globals.css";
 import NoiseOverlay from "@/components/NoiseOverlay";
 import CustomCursor from "@/components/CustomCursor";
 import SmoothScroll from "@/components/SmoothScroll";
+import { TransitionProvider } from "@/lib/transition-context";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -33,11 +34,13 @@ export default function RootLayout({
       className={`${playfair.variable} ${jetbrains.variable} antialiased`}
     >
       <body className="min-h-screen overflow-x-hidden bg-ink-base text-paper-text">
-        <SmoothScroll>
-          <NoiseOverlay />
-          <CustomCursor />
-          {children}
-        </SmoothScroll>
+        <TransitionProvider>
+          <SmoothScroll>
+            <NoiseOverlay />
+            <CustomCursor />
+            {children}
+          </SmoothScroll>
+        </TransitionProvider>
       </body>
     </html>
   );

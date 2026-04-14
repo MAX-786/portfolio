@@ -2,10 +2,17 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import type { Project } from "@/lib/projects";
+import { useTransitionContext } from "@/lib/transition-context";
 
 export default function ProjectPanel({ project, index }: { project: Project; index: number }) {
   const [isHovered, setIsHovered] = useState(false);
+  const { setProjectTitle } = useTransitionContext();
+
+  const handleClick = () => {
+    setProjectTitle(project.title);
+  };
 
   return (
     <div className="relative flex h-screen w-screen shrink-0 items-center justify-center overflow-hidden">
@@ -28,26 +35,31 @@ export default function ProjectPanel({ project, index }: { project: Project; ind
         VIEW_PROJECT →
       </div>
 
-      {/* Massive project title */}
-      <motion.h2
-        className="relative select-none font-serif text-[15vw] leading-none tracking-tight"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+      {/* Massive project title — clickable link */}
+      <Link
+        href={`/projects/${project.id}`}
+        onClick={handleClick}
         data-cursor="expand"
-        style={{
-          backgroundImage: isHovered
-            ? `linear-gradient(135deg, #8B0000 0%, #333 50%, #050505 100%)`
-            : "none",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          WebkitBackgroundClip: isHovered ? "text" : "unset",
-          backgroundClip: isHovered ? "text" : "unset",
-          color: isHovered ? "transparent" : "var(--paper-text)",
-          transition: "color 0.3s ease",
-        }}
       >
-        {project.title}
-      </motion.h2>
+        <motion.h2
+          className="relative select-none font-serif text-[15vw] leading-none tracking-tight"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          style={{
+            backgroundImage: isHovered
+              ? `linear-gradient(135deg, #8B0000 0%, #333 50%, #050505 100%)`
+              : "none",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            WebkitBackgroundClip: isHovered ? "text" : "unset",
+            backgroundClip: isHovered ? "text" : "unset",
+            color: isHovered ? "transparent" : "var(--paper-text)",
+            transition: "color 0.3s ease",
+          }}
+        >
+          {project.title}
+        </motion.h2>
+      </Link>
 
       {/* Decorative border lines */}
       <div className="absolute inset-8 border border-terminal-muted/10 pointer-events-none" />
