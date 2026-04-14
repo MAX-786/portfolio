@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+:root {
+  --ink-base: #050505;
+  --paper-text: #EAE6DF;
+  --crimson-accent: #8B0000;
+  --terminal-muted: #333333;
+}
+
+@theme inline {
+  --color-ink-base: var(--ink-base);
+  --color-paper-text: var(--paper-text);
+  --color-crimson-accent: var(--crimson-accent);
+  --color-terminal-muted: var(--terminal-muted);
+  --font-serif: var(--font-playfair);
+  --font-mono: var(--font-jetbrains);
+}
+
+* {
+  cursor: none;
+}
+
+html {
+  background: var(--ink-base);
+  color: var(--paper-text);
+  font-family: var(--font-jetbrains), monospace;
+  scrollbar-width: thin;
+  scrollbar-color: var(--terminal-muted) var(--ink-base);
+}
+
+::selection {
+  background: var(--crimson-accent);
+  color: var(--paper-text);
+}
+
+body {
+  background: var(--ink-base);
+  color: var(--paper-text);
+  overflow-x: hidden;
+}
