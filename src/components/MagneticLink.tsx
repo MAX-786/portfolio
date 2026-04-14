@@ -49,30 +49,32 @@ export default function MagneticLink({
       href={href}
       target={external ? "_blank" : undefined}
       rel={external ? "noopener noreferrer" : undefined}
-      className={`relative inline-block overflow-hidden font-mono text-xs uppercase tracking-[0.3em] ${className}`}
+      className={`inline-grid overflow-hidden font-mono text-xs uppercase tracking-[0.3em] ${className}`}
       style={{ x: springX, y: springY }}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={handleMouseLeave}
       data-cursor="expand"
     >
-      {/* Primary label — slides up on hover */}
-      <motion.span
-        className="block"
-        animate={{ y: isHovered ? "-100%" : "0%" }}
-        transition={{ duration: 0.3, ease: [0.76, 0, 0.24, 1] }}
-      >
-        {label}
-      </motion.span>
-
-      {/* Secondary label — slides up from below */}
-      <motion.span
-        className="absolute left-0 top-0 block"
-        animate={{ y: isHovered ? "0%" : "100%" }}
-        transition={{ duration: 0.3, ease: [0.76, 0, 0.24, 1] }}
-      >
-        {hoverLabel}
-      </motion.span>
+      {/* Both labels in same grid cell — container sizes to the wider one */}
+      <span className="col-start-1 row-start-1">
+        <motion.span
+          className="block"
+          animate={{ y: isHovered ? "-100%" : "0%" }}
+          transition={{ duration: 0.3, ease: [0.76, 0, 0.24, 1] }}
+        >
+          {label}
+        </motion.span>
+      </span>
+      <span className="col-start-1 row-start-1">
+        <motion.span
+          className="block"
+          animate={{ y: isHovered ? "0%" : "100%" }}
+          transition={{ duration: 0.3, ease: [0.76, 0, 0.24, 1] }}
+        >
+          {hoverLabel}
+        </motion.span>
+      </span>
     </motion.a>
   );
 }

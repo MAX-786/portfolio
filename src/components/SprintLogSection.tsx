@@ -102,10 +102,10 @@ export default function SprintLogSection() {
     <section ref={ref} className="relative px-6 py-32 md:px-16 lg:px-24">
       {/* Section header */}
       <div className="mb-6 flex items-end justify-between">
-        <h2 className="font-mono text-xs uppercase tracking-[0.3em] text-terminal-muted">
+        <h2 className="font-mono text-xs uppercase tracking-[0.3em] text-paper-text/40">
           [ 05 :: AI_IN_A_DAY ]
         </h2>
-        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-terminal-muted">
+        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper-text/40">
           {SPRINTS.length}/{SPRINTS.length} DEPLOYED
         </div>
       </div>
@@ -130,9 +130,9 @@ export default function SprintLogSection() {
 
       {/* Footer note */}
       <motion.p
-        className="mt-8 font-mono text-[10px] uppercase tracking-[0.2em] text-terminal-muted"
+        className="mt-8 font-mono text-[10px] uppercase tracking-[0.2em] text-paper-text/30"
         initial={{ opacity: 0 }}
-        animate={isInView ? { opacity: 0.6 } : { opacity: 0 }}
+        animate={isInView ? { opacity: 1 } : { opacity: 0 }}
         transition={{ duration: 0.6, delay: 0.8 }}
       >
         Built with AI coding assistants &middot; README.md has the full story on each

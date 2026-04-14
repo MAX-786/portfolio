@@ -1,0 +1,53 @@
+# Mohammad Hussain — Software Engineer
+
+> Personal portfolio of Mohammad Hussain (alias HiPHEN). SDE at Sutra AI, Google Summer of Code 2024 participant with Plone Foundation. Builds tools at the intersection of personal frustration and public utility. Stack: TypeScript, Next.js, React, Node.js, AWS.
+
+## About
+
+- Name: Mohammad Hussain
+- Alias: HiPHEN
+- Role: SDE 1 at Sutra AI (StringVentures), July 2025 – Present
+- Education: B.Tech, IIIT Jabalpur (2021–2025)
+- GitHub: https://github.com/MAX-786
+- LinkedIn: https://www.linkedin.com/in/mohammad-k-hussain/
+- Email: hussainmohammad328@gmail.com
+- Website: https://mkhismkh.com
+
+## Experience
+
+- **SDE 1 at Sutra AI** (Jul 2025–Present): End-to-end AI process automation. AWS Step Functions for ML pipelines. ARD ingestion with Amazon Bedrock.
+- **SDE Intern at Sutra AI** (Jan–Jun 2025): TypeScript/React/Next.js features, Node.js/Express backend, AI workflow integrations.
+- **GSoC 2024 with Plone** (May–Aug 2024): Built Volto Hydra — a decoupled visual editor for Plone CMS. Presented at Plone Conference 2024 in Brasilia. [Source](https://github.com/collective/volto-hydra)
+- **Web Developer at HAM Lab, IIITDM** (Sep–Dec 2023): Led 8-member team, achieved ~30% faster page loads.
+
+## Featured Projects
+
+- [Prompy](https://prompy.org): Browser extension for AI prompt management. TypeScript, React, Node.js, MongoDB. OAuth2.0, encrypted storage, sub-200ms search. [Source](https://github.com/MAX-786/prompy)
+- [Hydra](https://hydra.pretagov.com): Decoupled visual editor for Plone CMS, built during GSoC 2024. React, Volto, REST API, Python. [Source](https://github.com/collective/volto-hydra)
+- [KYPE](https://github.com/MAX-786/ApnaProfessor): Professor reviews platform. React, MaterialUI, MongoDB, Firebase. JWT auth, faceted search.
+
+## AI in a Day (One-Shot Tools)
+
+Tools built in a single day using AI coding assistants, open-sourced for the community:
+
+- [Project Nexus](https://github.com/MAX-786/project-nexus): BYOK knowledge tracker — auto-summarizes web content, builds visual knowledge graphs, quizzes memory.
+- [Fabric](https://github.com/MAX-786/fabric): End-to-end AI automation platform for chaining models and triggering workflows.
+- [ZenPiano](https://github.com/MAX-786/zenpiano): AI piano teacher that reads MIDI data and identifies mistakes in real-time.
+- [DevGains](https://github.com/MAX-786/devgains): Daily nutrition intake tracker for developers.
+- [Gmailer](https://github.com/MAX-786/gmailer): Send rich HTML emails to multiple recipients via your own Gmail. OAuth-secured.
+- [MCP Auth](https://github.com/MAX-786/demo-mcp-with-auth): Authentication layer for Model Context Protocol servers (Claude Desktop).
+- [mkhismkh](https://github.com/MAX-786/mkhismkh): Personal website with daily digital garden journaling. AstroJS, AWS S3, CloudFront, Lambda@Edge.
+
+## Technical Skills
+
+- Languages: Java, Golang, C++, JavaScript/TypeScript, Python
+- Frameworks: Node.js/Express, React, Next.js, AstroJS, Volto
+- Cloud: AWS (EC2, S3, RDS, Lambda, Step Functions, Bedrock), Docker, Kubernetes
+- Databases: PostgreSQL, MongoDB, Redis, MySQL
+- APIs: REST, GraphQL, OAuth 2.0, JWT
+
+## Achievements
+
+- Plone Conference 2024 (Brasilia): Invited speaker — lightning talk on Volto Hydra editor
+- LeetCode: 750+ problems solved (HiPHEN001)
+- Bank of Baroda Hackathon: Top 10 finalist for "myFiM" personal finance chatbot

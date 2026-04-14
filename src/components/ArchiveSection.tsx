@@ -48,12 +48,12 @@ export default function ArchiveSection() {
   return (
     <section ref={ref} className="relative px-6 py-32 md:px-16 lg:px-24">
       {/* Section label */}
-      <h2 className="mb-16 font-mono text-xs uppercase tracking-[0.3em] text-terminal-muted">
+      <h2 className="mb-16 font-mono text-xs uppercase tracking-[0.3em] text-paper-text/40">
         [ 04 :: ARCHIVE ]
       </h2>
 
       {/* Table header */}
-      <div className="mb-4 grid grid-cols-[100px_1fr_1fr_40px] gap-4 border-b border-terminal-muted/30 pb-4 font-mono text-xs uppercase tracking-[0.2em] text-terminal-muted md:grid-cols-[120px_1fr_200px_60px]">
+      <div className="mb-4 grid grid-cols-[100px_1fr_1fr_40px] gap-4 border-b border-terminal-muted/30 pb-4 font-mono text-xs uppercase tracking-[0.2em] text-paper-text/30 md:grid-cols-[120px_1fr_200px_60px]">
         <span>Date</span>
         <span>Title</span>
         <span className="hidden md:block">Domain</span>
