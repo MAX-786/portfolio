@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
     },
-    sitemap: "https://hiphen.dev/sitemap.xml",
+    sitemap: "https://mkhismkh.com/sitemap.xml",
   };
 }

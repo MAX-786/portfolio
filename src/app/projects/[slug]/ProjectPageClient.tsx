@@ -47,9 +47,9 @@ export default function ProjectPageClient({ project }: { project: Project }) {
           <div className="mx-auto grid max-w-4xl grid-cols-3 gap-8 border-t border-terminal-muted/30 pt-6">
             <div>
               <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-terminal-muted">
-                [DEPLOYMENT_STATUS]
+                [TYPE]
               </div>
-              <div className="mt-2 font-mono text-sm text-paper-text">ACTIVE</div>
+              <div className="mt-2 font-mono text-sm text-paper-text">{project.type}</div>
             </div>
             <div>
               <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-terminal-muted">
@@ -87,68 +87,42 @@ export default function ProjectPageClient({ project }: { project: Project }) {
           className="space-y-8"
         >
           <p className="font-mono text-sm leading-relaxed text-paper-text/80">
-            {project.title} represents a focused exploration into the intersection of
-            collaborative interfaces and real-time data orchestration. The architecture
-            prioritizes developer experience without sacrificing end-user performance.
+            {project.description}
           </p>
 
           <blockquote className="-mx-8 my-16 font-serif text-3xl leading-relaxed md:-mx-16 md:text-4xl">
-            &ldquo;The best tools disappear into the workflow — they amplify intent
-            without introducing friction.&rdquo;
+            &ldquo;{project.quote}&rdquo;
           </blockquote>
 
           <p className="font-mono text-sm leading-relaxed text-paper-text/80">
-            Built with {project.techStack.join(", ")}, the system leverages server-side
-            rendering for initial payload delivery while maintaining client-side reactivity
-            for interactive components. The database layer uses optimistic updates with
-            conflict resolution to handle concurrent editing sessions.
+            {project.details}
           </p>
 
-          {/* Terminal-style code block */}
-          <div className="overflow-hidden rounded-lg border border-terminal-muted/30">
-            <div className="flex items-center gap-2 border-b border-terminal-muted/30 bg-terminal-muted/10 px-4 py-3">
-              <div className="h-3 w-3 rounded-full bg-[#FF5F56]" />
-              <div className="h-3 w-3 rounded-full bg-[#FFBD2E]" />
-              <div className="h-3 w-3 rounded-full bg-[#27C93F]" />
-              <span className="ml-4 font-mono text-[10px] text-terminal-muted">
-                ~/projects/{project.id}/src/index.ts
-              </span>
-            </div>
-            <pre className="overflow-x-auto p-4 font-mono text-xs leading-loose">
-              <code>
-                <span className="text-terminal-muted">{"// Core application entry"}</span>
-                {"\n"}
-                <span className="text-crimson-accent">import</span>
-                {" { createServer } "}
-                <span className="text-crimson-accent">from</span>
-                {" '"}
-                <span className="text-paper-text/70">./server</span>
-                {"';\n"}
-                <span className="text-crimson-accent">import</span>
-                {" { initDatabase } "}
-                <span className="text-crimson-accent">from</span>
-                {" '"}
-                <span className="text-paper-text/70">./db</span>
-                {"';\n\n"}
-                <span className="text-crimson-accent">const</span>
-                {" app = "}
-                <span className="text-paper-text">createServer</span>
-                {"({\n  port: "}
-                <span className="text-paper-text/70">3000</span>
-                {",\n  cors: "}
-                <span className="text-crimson-accent">true</span>
-                {",\n});\n\n"}
-                <span className="text-crimson-accent">await</span>
-                {" initDatabase();\napp.listen();"}
-              </code>
-            </pre>
+          {/* Project links */}
+          <div className="flex gap-8 border-t border-terminal-muted/30 pt-8">
+            {project.liveUrl && (
+              <a
+                href={project.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-xs uppercase tracking-[0.3em] text-terminal-muted transition-colors hover:text-paper-text"
+                data-cursor="expand"
+              >
+                LIVE_DEMO &rarr;
+              </a>
+            )}
+            {project.repoUrl && (
+              <a
+                href={project.repoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-xs uppercase tracking-[0.3em] text-terminal-muted transition-colors hover:text-paper-text"
+                data-cursor="expand"
+              >
+                SOURCE_CODE &rarr;
+              </a>
+            )}
           </div>
-
-          <p className="font-mono text-sm leading-relaxed text-paper-text/80">
-            The deployment pipeline automates testing, preview environments, and
-            production rollouts through a single configuration file. Each commit
-            triggers a full integration test suite before any merge is permitted.
-          </p>
         </motion.div>
       </section>
 
@@ -172,7 +146,7 @@ export default function ProjectPageClient({ project }: { project: Project }) {
           </motion.span>
         </Link>
         <div className="mt-6 font-mono text-xs text-terminal-muted">
-          {nextProject.tagline} — {nextProject.year}
+          {nextProject.tagline} &mdash; {nextProject.year}
         </div>
 
         {/* Back to home */}
@@ -181,7 +155,7 @@ export default function ProjectPageClient({ project }: { project: Project }) {
           className="absolute bottom-8 font-mono text-xs uppercase tracking-[0.3em] text-terminal-muted transition-colors hover:text-paper-text"
           data-cursor="expand"
         >
-          ← BACK_TO_INDEX
+          &larr; BACK_TO_INDEX
         </Link>
       </section>
     </div>

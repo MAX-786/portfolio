@@ -4,16 +4,16 @@ import { useRef } from "react";
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
 
 const IDENTITY = [
-  { key: "Name", value: "Mohammad" },
-  { key: "Alias", value: "hiphen" },
-  { key: "Role", value: "Software Engineer" },
-  { key: "Current_Objective", value: "Redefining UX" },
-  { key: "Stack", value: "Next.js / React / Node" },
-  { key: "Location", value: "Building in public" },
+  { key: "Name", value: "Mohammad Hussain" },
+  { key: "Alias", value: "HiPHEN" },
+  { key: "Role", value: "SDE @ Sutra AI" },
+  { key: "Stack", value: "TypeScript / Next.js / AWS" },
+  { key: "Speaks_At", value: "Plone Conf '24, Brasília" },
+  { key: "Solves", value: "750+ on LeetCode" },
 ];
 
 const PHILOSOPHY =
-  "I believe software should feel inevitable — every interaction considered, every transition purposeful. I build collaborative tools and platforms where engineering precision meets editorial elegance. The best interfaces don't just work; they speak. They breathe rhythm into data, and poetry into logic. My craft sits at the intersection of systems thinking and sensory design — where architecture serves aesthetics, and function becomes feeling.";
+  "I ship things that matter to me \u2014 then open-source them for everyone else. From browser extensions that fix my daily workflow to CMS editors presented on international stages, I build at the intersection of personal frustration and public utility. My stack runs deep: TypeScript end-to-end, AWS orchestration, AI pipelines that actually reach production. The best code I\u2019ve written solved a problem I had at 2 AM. The second best code solved it for a thousand strangers by morning.";
 
 function WordReveal({ text }: { text: string }) {
   const ref = useRef<HTMLParagraphElement>(null);

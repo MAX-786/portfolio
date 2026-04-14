@@ -5,9 +5,9 @@ import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import MagneticLink from "@/components/MagneticLink";
 
 const LINKS = [
-  { label: "GITHUB", hoverLabel: "VIEW_REPOS", href: "https://github.com/hiphen" },
-  { label: "LINKEDIN", hoverLabel: "CONNECT_NOW", href: "https://linkedin.com/in/hiphen" },
-  { label: "EMAIL", hoverLabel: "SEND_SIGNAL", href: "mailto:hello@hiphen.dev" },
+  { label: "GITHUB", hoverLabel: "VIEW_REPOS", href: "https://github.com/MAX-786" },
+  { label: "LINKEDIN", hoverLabel: "CONNECT_NOW", href: "https://www.linkedin.com/in/mohammad-k-hussain/" },
+  { label: "EMAIL", hoverLabel: "SEND_SIGNAL", href: "mailto:hussainmohammad328@gmail.com" },
 ];
 
 export default function ContactFooter() {
@@ -81,8 +81,8 @@ export default function ContactFooter() {
       {/* Bottom signature */}
       <div className="absolute bottom-8 w-full px-8">
         <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.2em] text-ink-base/30">
-          <span>&copy; {new Date().getFullYear()} MOHAMMAD</span>
-          <span>DESIGNED &amp; ENGINEERED BY HIPHEN</span>
+          <span>&copy; {new Date().getFullYear()} MOHAMMAD HUSSAIN</span>
+          <span>BUILT BY HIPHEN &middot; OPEN SOURCE</span>
         </div>
       </div>
     </motion.section>

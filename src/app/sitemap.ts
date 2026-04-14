@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { PROJECTS } from "@/lib/projects";
 
-const BASE_URL = "https://hiphen.dev";
+const BASE_URL = "https://mkhismkh.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const projectRoutes = PROJECTS.map((project) => ({

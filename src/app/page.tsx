@@ -2,6 +2,7 @@ import HeroSection from "@/components/HeroSection";
 import AboutSection from "@/components/AboutSection";
 import ProjectShowcase from "@/components/ProjectShowcase";
 import ArchiveSection from "@/components/ArchiveSection";
+import SprintLogSection from "@/components/SprintLogSection";
 import ContactFooter from "@/components/ContactFooter";
 
 export default function Home() {
@@ -11,6 +12,7 @@ export default function Home() {
       <AboutSection />
       <ProjectShowcase />
       <ArchiveSection />
+      <SprintLogSection />
       <ContactFooter />
     </main>
   );

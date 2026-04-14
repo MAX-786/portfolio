@@ -21,21 +21,21 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Mohammad — Software Engineer",
-  description: "Crafting Logic. A portfolio by Mohammad (hiphen). Engineering precision meets editorial elegance.",
-  metadataBase: new URL("https://hiphen.dev"),
+  title: "Mohammad Hussain — Software Engineer",
+  description: "Crafting Logic. SDE at Sutra AI. GSoC '24 with Plone. Building tools that solve real problems.",
+  metadataBase: new URL("https://mkhismkh.com"),
   openGraph: {
-    title: "Mohammad — Software Engineer",
-    description: "Crafting Logic. Engineering precision meets editorial elegance.",
-    url: "https://hiphen.dev",
-    siteName: "hiphen.dev",
+    title: "Mohammad Hussain — Software Engineer",
+    description: "Crafting Logic. SDE at Sutra AI. GSoC '24 with Plone. Building tools that solve real problems.",
+    url: "https://mkhismkh.com",
+    siteName: "mkhismkh.com",
     locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Mohammad — Software Engineer",
-    description: "Crafting Logic. Engineering precision meets editorial elegance.",
+    title: "Mohammad Hussain — Software Engineer",
+    description: "Crafting Logic. SDE at Sutra AI. GSoC '24 with Plone. Building tools that solve real problems.",
   },
   robots: {
     index: true,
