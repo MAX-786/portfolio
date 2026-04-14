@@ -2,12 +2,12 @@
 
 import { useRef } from "react";
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
-import Link from "next/link";
+import MagneticLink from "@/components/MagneticLink";
 
 const LINKS = [
-  { label: "GITHUB", href: "https://github.com/hiphen" },
-  { label: "LINKEDIN", href: "https://linkedin.com/in/hiphen" },
-  { label: "EMAIL", href: "mailto:hello@hiphen.dev" },
+  { label: "GITHUB", hoverLabel: "VIEW_REPOS", href: "https://github.com/hiphen" },
+  { label: "LINKEDIN", hoverLabel: "CONNECT_NOW", href: "https://linkedin.com/in/hiphen" },
+  { label: "EMAIL", hoverLabel: "SEND_SIGNAL", href: "mailto:hello@hiphen.dev" },
 ];
 
 export default function ContactFooter() {
@@ -67,14 +67,14 @@ export default function ContactFooter() {
         transition={{ duration: 0.6, delay: 0.4 }}
       >
         {LINKS.map((link) => (
-          <Link
+          <MagneticLink
             key={link.label}
             href={link.href}
-            className="font-mono text-xs uppercase tracking-[0.3em] text-ink-base/60 transition-colors duration-300 hover:text-ink-base"
-            data-cursor="expand"
-          >
-            {link.label}
-          </Link>
+            label={link.label}
+            hoverLabel={link.hoverLabel}
+            external={!link.href.startsWith("mailto:")}
+            className="text-ink-base/60 hover:text-ink-base"
+          />
         ))}
       </motion.div>
 

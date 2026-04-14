@@ -90,6 +90,7 @@ export default function AboutSection() {
       className="relative min-h-screen px-6 py-32 md:px-16 lg:px-24"
       style={{ y, opacity }}
     >
+      <h2 className="sr-only">About</h2>
       <div className="mx-auto grid max-w-7xl gap-16 md:grid-cols-2 md:gap-24">
         <div className="flex flex-col justify-center">
           <IdentityPayload />

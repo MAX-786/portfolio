@@ -31,8 +31,21 @@ export default function ProjectPanel({ project, index }: { project: Project; ind
         {project.techStack.map((tech) => `[${tech}]`).join(" ")}
       </div>
 
-      <div className="absolute bottom-8 right-8 font-mono text-xs uppercase tracking-[0.2em] text-terminal-muted">
-        VIEW_PROJECT →
+      <div className="absolute bottom-8 right-8 overflow-hidden font-mono text-xs uppercase tracking-[0.2em] text-terminal-muted">
+        <motion.span
+          className="block"
+          animate={{ y: isHovered ? "-100%" : "0%" }}
+          transition={{ duration: 0.3, ease: [0.76, 0, 0.24, 1] }}
+        >
+          VIEW_PROJECT &rarr;
+        </motion.span>
+        <motion.span
+          className="absolute left-0 top-0 block text-paper-text"
+          animate={{ y: isHovered ? "0%" : "100%" }}
+          transition={{ duration: 0.3, ease: [0.76, 0, 0.24, 1] }}
+        >
+          ENTER_PROJECT &rarr;
+        </motion.span>
       </div>
 
       {/* Massive project title — clickable link */}

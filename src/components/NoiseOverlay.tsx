@@ -5,6 +5,7 @@ export default function NoiseOverlay() {
     <svg
       className="pointer-events-none fixed inset-0 z-50 h-full w-full opacity-[0.03]"
       style={{ mixBlendMode: "overlay" }}
+      aria-hidden="true"
     >
       <filter id="noise">
         <feTurbulence

@@ -1,9 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
 const SPRING_CONFIG = { stiffness: 150, damping: 15, mass: 0.1 };
+
+type CursorMode = "default" | "expand" | "caret";
+
+const TEXT_TAGS = new Set(["P", "SPAN", "H1", "H2", "H3", "H4", "H5", "H6", "LI", "BLOCKQUOTE", "LABEL"]);
 
 export default function CustomCursor() {
   const cursorX = useMotionValue(-100);
@@ -11,8 +15,7 @@ export default function CustomCursor() {
   const springX = useSpring(cursorX, SPRING_CONFIG);
   const springY = useSpring(cursorY, SPRING_CONFIG);
 
-  const cursorSize = useMotionValue(8);
-  const springSize = useSpring(cursorSize, SPRING_CONFIG);
+  const [mode, setMode] = useState<CursorMode>("default");
 
   useEffect(() => {
     const onMouseMove = (e: MouseEvent) => {
@@ -29,7 +32,13 @@ export default function CustomCursor() {
         target.closest("button") ||
         target.dataset.cursor === "expand";
 
-      cursorSize.set(isInteractive ? 60 : 8);
+      if (isInteractive) {
+        setMode("expand");
+      } else if (TEXT_TAGS.has(target.tagName)) {
+        setMode("caret");
+      } else {
+        setMode("default");
+      }
     };
 
     window.addEventListener("mousemove", onMouseMove);
@@ -39,16 +48,23 @@ export default function CustomCursor() {
       window.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseover", onMouseOver);
     };
-  }, [cursorX, cursorY, cursorSize]);
+  }, [cursorX, cursorY]);
+
+  const isExpand = mode === "expand";
+  const isCaret = mode === "caret";
 
   return (
     <motion.div
-      className="pointer-events-none fixed top-0 left-0 z-[100] rounded-full bg-white"
+      className="pointer-events-none fixed top-0 left-0 z-[100] bg-white"
+      animate={{
+        width: isExpand ? 60 : isCaret ? 2 : 8,
+        height: isExpand ? 60 : isCaret ? 24 : 8,
+        borderRadius: isExpand ? 30 : isCaret ? 1 : 4,
+      }}
+      transition={{ type: "spring", ...SPRING_CONFIG }}
       style={{
         x: springX,
         y: springY,
-        width: springSize,
-        height: springSize,
         translateX: "-50%",
         translateY: "-50%",
         mixBlendMode: "difference",

@@ -62,7 +62,7 @@ export default function HeroSection() {
         </motion.div>
 
         {/* Main title */}
-        <div className="relative z-10 flex items-baseline gap-[2vw]">
+        <h1 className="relative z-10 flex items-baseline gap-[2vw]">
           <motion.span
             className="font-serif text-[10vw] leading-none tracking-tight"
             style={{ x: craftingX, opacity: textOpacity }}
@@ -75,7 +75,7 @@ export default function HeroSection() {
           >
             Logic.
           </motion.span>
-        </div>
+        </h1>
       </div>
     </section>
   );
