@@ -15,18 +15,8 @@ export default function ProjectShowcase() {
   const panelCount = PROJECTS.length;
   const x = useTransform(scrollYProgress, [0, 1], ["0vw", `-${(panelCount - 1) * 100}vw`]);
 
-  const labelOpacity = useTransform(scrollYProgress, [0, 0.05], [1, 0]);
-
   return (
     <section ref={sectionRef} style={{ height: `${panelCount * 100}vh` }} className="relative">
-      {/* Section label */}
-      <motion.div
-        className="absolute top-8 left-8 z-10 font-mono text-xs uppercase tracking-[0.3em] text-terminal-muted"
-        style={{ opacity: labelOpacity, position: "fixed" }}
-      >
-        [ 03 :: SELECTED_WORK ]
-      </motion.div>
-
       {/* Horizontal scroll container */}
       <div className="sticky top-0 h-screen overflow-hidden">
         <motion.div className="flex h-full" style={{ x }}>
