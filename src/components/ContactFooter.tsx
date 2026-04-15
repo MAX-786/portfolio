@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
+import Image from "next/image";
 import MagneticLink from "@/components/MagneticLink";
 
 const LINKS = [
@@ -81,7 +82,16 @@ export default function ContactFooter() {
       {/* Bottom signature */}
       <div className="absolute bottom-8 w-full px-8">
         <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.2em] text-ink-base/30">
-          <span>&copy; {new Date().getFullYear()} MOHAMMAD HUSSAIN</span>
+          <div className="flex items-center gap-3">
+            <Image
+              src="/icon-64.png"
+              alt="MKH mark"
+              width={20}
+              height={20}
+              className="rounded-sm"
+            />
+            <span>&copy; {new Date().getFullYear()} MOHAMMAD HUSSAIN</span>
+          </div>
           <span>BUILT BY HIPHEN &middot; OPEN SOURCE</span>
         </div>
       </div>

@@ -24,6 +24,7 @@ export const metadata: Metadata = {
   title: "Mohammad Hussain — Software Engineer",
   description: "Crafting Logic. SDE at Sutra AI. GSoC '24 with Plone. Building tools that solve real problems.",
   metadataBase: new URL("https://mkhismkh.com"),
+  manifest: "/manifest.json",
   openGraph: {
     title: "Mohammad Hussain — Software Engineer",
     description: "Crafting Logic. SDE at Sutra AI. GSoC '24 with Plone. Building tools that solve real problems.",
