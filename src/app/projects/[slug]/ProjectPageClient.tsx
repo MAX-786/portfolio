@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import type { Project } from "@/lib/projects";
 import { PROJECTS } from "@/lib/projects";
 import { useTransitionContext } from "@/lib/transition-context";
@@ -17,6 +18,17 @@ export default function ProjectPageClient({ project }: { project: Project }) {
 
   return (
     <div className="min-h-screen">
+      {/* Logo — home link */}
+      <Link href="/" className="absolute top-8 left-8 z-10" data-cursor="expand">
+        <Image
+          src="/logo-wide.png"
+          alt="MKH — back to home"
+          width={100}
+          height={54}
+          priority
+        />
+      </Link>
+
       {/* Section A: Project Hero */}
       <section className="relative flex h-screen flex-col items-center justify-center">
         <motion.h1

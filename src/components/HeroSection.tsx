@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
+import Image from "next/image";
 
 const CODE_SNIPPETS = [
   `const router = useRouter();`,
@@ -59,6 +60,22 @@ export default function HeroSection() {
           {Array.from({ length: 8 }).map((_, i) => (
             <Marquee key={i} reverse={i % 2 === 1} speed={35 + i * 5} />
           ))}
+        </motion.div>
+
+        {/* Logo masthead — top left */}
+        <motion.div
+          className="absolute top-8 left-8 z-10"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          <Image
+            src="/logo-wide.png"
+            alt="MKH — mkhismkh.com"
+            width={120}
+            height={65}
+            priority
+          />
         </motion.div>
 
         {/* Main title */}

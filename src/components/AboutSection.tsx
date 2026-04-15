@@ -8,6 +8,7 @@ const IDENTITY = [
   { key: "Alias", value: "HiPHEN" },
   { key: "Role", value: "SDE @ Sutra AI" },
   { key: "Stack", value: "TypeScript / Next.js / AWS" },
+  { key: "Bio", value: "Open-source gardener: planting PRs, pruning bugs" },
   { key: "Speaks_At", value: "Plone Conf '24, Brasília" },
   { key: "Solves", value: "750+ on LeetCode" },
 ];
