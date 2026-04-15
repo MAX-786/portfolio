@@ -23,7 +23,7 @@ function Marquee({ reverse = false, speed = 40 }: { reverse?: boolean; speed?: n
   return (
     <div className="flex overflow-hidden whitespace-nowrap">
       <motion.div
-        className="flex gap-12 font-mono text-sm text-terminal-muted"
+        className="flex gap-12 font-mono text-sm text-paper-text"
         animate={{ x: reverse ? ["0%", "-50%"] : ["-50%", "0%"] }}
         transition={{ duration: speed, repeat: Infinity, ease: "linear" }}
       >
