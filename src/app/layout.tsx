@@ -7,6 +7,7 @@ import CustomCursor from "@/components/CustomCursor";
 import SmoothScroll from "@/components/SmoothScroll";
 import ReducedMotionProvider from "@/components/ReducedMotionProvider";
 import { TransitionProvider } from "@/lib/transition-context";
+import { BriefingProvider } from "@/lib/briefing-context";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -62,14 +63,16 @@ export default function RootLayout({
           Skip to content
         </a>
         <ReducedMotionProvider>
-          <TransitionProvider>
-            <SmoothScroll>
+          <BriefingProvider>
+            <TransitionProvider>
+              <SmoothScroll>
               <NoiseOverlay />
               <GridOverlay />
               <CustomCursor />
               <div id="main-content">{children}</div>
-            </SmoothScroll>
-          </TransitionProvider>
+              </SmoothScroll>
+            </TransitionProvider>
+          </BriefingProvider>
         </ReducedMotionProvider>
       </body>
     </html>

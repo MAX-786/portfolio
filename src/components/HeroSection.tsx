@@ -1,8 +1,10 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef, useState, useEffect, useCallback } from "react";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { useBriefing } from "@/lib/briefing-context";
+import BriefingPrompt from "./BriefingPrompt";
 
 const CODE_SNIPPETS = [
   `const router = useRouter();`,
@@ -36,8 +38,42 @@ function Marquee({ reverse = false, speed = 40 }: { reverse?: boolean; speed?: n
   );
 }
 
+function Typewriter({ text, onComplete }: { text: string; onComplete?: () => void }) {
+  const [displayed, setDisplayed] = useState("");
+  const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    let i = 0;
+    setDisplayed("");
+    setDone(false);
+    const interval = setInterval(() => {
+      i++;
+      setDisplayed(text.slice(0, i));
+      if (i >= text.length) {
+        clearInterval(interval);
+        setDone(true);
+        onComplete?.();
+      }
+    }, 30);
+    return () => clearInterval(interval);
+  }, [text, onComplete]);
+
+  return (
+    <span>
+      {displayed}
+      {!done && (
+        <span className="inline-block w-[0.5em] h-[0.8em] bg-crimson-accent animate-blink ml-0.5 align-baseline" />
+      )}
+    </span>
+  );
+}
+
 export default function HeroSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const { status, heroLine1, heroLine2 } = useBriefing();
+
+  const [line1Done, setLine1Done] = useState(false);
+  const briefingReady = status === "done" && !!heroLine1 && !!heroLine2;
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -48,6 +84,10 @@ export default function HeroSection() {
   const logicX = useTransform(scrollYProgress, [0, 0.6], ["0%", "120%"]);
   const textOpacity = useTransform(scrollYProgress, [0.3, 0.6], [1, 0]);
   const marqueeOpacity = useTransform(scrollYProgress, [0, 0.4], [0.15, 0]);
+
+  const handleLine1Complete = useCallback(() => {
+    setLine1Done(true);
+  }, []);
 
   return (
     <section ref={sectionRef} className="relative h-[200vh]">
@@ -80,19 +120,56 @@ export default function HeroSection() {
 
         {/* Main title */}
         <h1 className="relative z-10 flex items-baseline gap-[2vw]">
-          <motion.span
-            className="font-serif text-[10vw] leading-none tracking-tight"
-            style={{ x: craftingX, opacity: textOpacity }}
-          >
-            Crafting
-          </motion.span>
-          <motion.span
-            className="font-serif text-[10vw] leading-none tracking-tight"
-            style={{ x: logicX, opacity: textOpacity }}
-          >
-            Logic.
-          </motion.span>
+          <AnimatePresence mode="wait">
+            {!briefingReady ? (
+              <motion.span
+                key="default"
+                className="flex items-baseline gap-[2vw]"
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <motion.span
+                  className="font-serif text-[10vw] leading-none tracking-tight"
+                  style={{ x: craftingX, opacity: textOpacity }}
+                >
+                  Crafting
+                </motion.span>
+                <motion.span
+                  className="font-serif text-[10vw] leading-none tracking-tight"
+                  style={{ x: logicX, opacity: textOpacity }}
+                >
+                  Logic.
+                </motion.span>
+              </motion.span>
+            ) : (
+              <motion.span
+                key="personalized"
+                className="flex items-baseline gap-[2vw]"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.4 }}
+              >
+                <motion.span
+                  className="font-serif text-[10vw] leading-none tracking-tight"
+                  style={{ x: craftingX }}
+                >
+                  <Typewriter text={heroLine1!} onComplete={handleLine1Complete} />
+                </motion.span>
+                <motion.span
+                  className="font-serif text-[10vw] leading-none tracking-tight"
+                  style={{ x: logicX }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: line1Done ? 1 : 0 }}
+                >
+                  {line1Done ? <Typewriter text={heroLine2!} /> : null}
+                </motion.span>
+              </motion.span>
+            )}
+          </AnimatePresence>
         </h1>
+
+        {/* The Briefing — terminal prompt */}
+        <BriefingPrompt />
       </div>
     </section>
   );
