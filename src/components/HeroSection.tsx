@@ -21,6 +21,8 @@ const CODE_SNIPPETS = [
   `export default function Layout({ children }: Props) {`,
 ];
 
+const SCRAMBLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&";
+
 function Marquee({ reverse = false, speed = 40 }: { reverse?: boolean; speed?: number }) {
   const items = [...CODE_SNIPPETS, ...CODE_SNIPPETS];
   return (
@@ -38,41 +40,63 @@ function Marquee({ reverse = false, speed = 40 }: { reverse?: boolean; speed?: n
   );
 }
 
-function Typewriter({ text, onComplete }: { text: string; onComplete?: () => void }) {
+function TextScramble({ text, onComplete, scrambleSpeed = 30 }: {
+  text: string;
+  onComplete?: () => void;
+  scrambleSpeed?: number;
+}) {
   const [displayed, setDisplayed] = useState("");
-  const [done, setDone] = useState(false);
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
 
   useEffect(() => {
-    let i = 0;
-    setDisplayed("");
-    setDone(false);
+    let frame = 0;
+    const totalFrames = text.length * 2;
     const interval = setInterval(() => {
-      i++;
-      setDisplayed(text.slice(0, i));
-      if (i >= text.length) {
+      frame++;
+      const resolved = Math.floor(frame / 2);
+      const chars = text.split("").map((char, i) => {
+        if (char === " ") return " ";
+        if (i < resolved) return text[i];
+        return SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
+      });
+      setDisplayed(chars.join(""));
+      if (frame >= totalFrames) {
         clearInterval(interval);
-        setDone(true);
-        onComplete?.();
+        setDisplayed(text);
+        onCompleteRef.current?.();
       }
-    }, 30);
+    }, scrambleSpeed);
     return () => clearInterval(interval);
-  }, [text, onComplete]);
+  }, [text, scrambleSpeed]);
 
-  return (
-    <span>
-      {displayed}
-      {!done && (
-        <span className="inline-block w-[0.5em] h-[0.8em] bg-crimson-accent animate-blink ml-0.5 align-baseline" />
-      )}
-    </span>
-  );
+  return <span>{displayed}</span>;
+}
+
+function ScrambleLoader({ base, isActive }: { base: string; isActive: boolean }) {
+  const [displayed, setDisplayed] = useState(base);
+
+  useEffect(() => {
+    if (!isActive) { setDisplayed(base); return; }
+    const interval = setInterval(() => {
+      setDisplayed(
+        base.split("").map(c =>
+          c === " " ? " " : SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)]
+        ).join("")
+      );
+    }, 50);
+    return () => clearInterval(interval);
+  }, [base, isActive]);
+
+  return <span className={isActive ? "text-terminal-muted" : ""}>{displayed}</span>;
 }
 
 export default function HeroSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const { status, heroLine1, heroLine2 } = useBriefing();
+  const { status, heroLine1, heroLine2, objective } = useBriefing();
 
   const [line1Done, setLine1Done] = useState(false);
+  const isGenerating = status === "generating";
   const briefingReady = status === "done" && !!heroLine1 && !!heroLine2;
 
   const { scrollYProgress } = useScroll({
@@ -119,12 +143,12 @@ export default function HeroSection() {
         </motion.div>
 
         {/* Main title */}
-        <h1 className="relative z-10 flex items-baseline gap-[2vw]">
+        <h1 className="relative z-10 flex flex-wrap items-baseline justify-center gap-[2vw]">
           <AnimatePresence mode="wait">
             {!briefingReady ? (
               <motion.span
                 key="default"
-                className="flex items-baseline gap-[2vw]"
+                className="flex flex-wrap items-baseline justify-center gap-[2vw]"
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
               >
@@ -132,19 +156,19 @@ export default function HeroSection() {
                   className="font-serif text-[10vw] leading-none tracking-tight"
                   style={{ x: craftingX, opacity: textOpacity }}
                 >
-                  Crafting
+                  <ScrambleLoader base="Crafting" isActive={isGenerating} />
                 </motion.span>
                 <motion.span
                   className="font-serif text-[10vw] leading-none tracking-tight"
                   style={{ x: logicX, opacity: textOpacity }}
                 >
-                  Logic.
+                  <ScrambleLoader base="Logic." isActive={isGenerating} />
                 </motion.span>
               </motion.span>
             ) : (
               <motion.span
                 key="personalized"
-                className="flex items-baseline gap-[2vw]"
+                className="flex flex-wrap items-baseline justify-center gap-[2vw]"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.4 }}
@@ -153,7 +177,7 @@ export default function HeroSection() {
                   className="font-serif text-[10vw] leading-none tracking-tight"
                   style={{ x: craftingX }}
                 >
-                  <Typewriter text={heroLine1!} onComplete={handleLine1Complete} />
+                  <TextScramble text={heroLine1!} onComplete={handleLine1Complete} />
                 </motion.span>
                 <motion.span
                   className="font-serif text-[10vw] leading-none tracking-tight"
@@ -161,12 +185,39 @@ export default function HeroSection() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: line1Done ? 1 : 0 }}
                 >
-                  {line1Done ? <Typewriter text={heroLine2!} /> : null}
+                  {line1Done ? <TextScramble text={heroLine2!} /> : null}
                 </motion.span>
               </motion.span>
             )}
           </AnimatePresence>
         </h1>
+
+        {/* Hero objective subtitle — appears after briefing */}
+        <AnimatePresence>
+          {briefingReady && objective && line1Done && (
+            <motion.p
+              className="relative z-10 mt-6 font-mono text-sm tracking-wider text-terminal-muted md:text-base"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <span className="text-crimson-accent">CURRENT_OBJECTIVE:</span>{" "}
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={objective}
+                  className="text-paper-text"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {objective}
+                </motion.span>
+              </AnimatePresence>
+            </motion.p>
+          )}
+        </AnimatePresence>
 
         {/* The Briefing — terminal prompt */}
         <BriefingPrompt />

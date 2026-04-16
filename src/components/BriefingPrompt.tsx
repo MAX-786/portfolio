@@ -5,9 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useBriefing } from "@/lib/briefing-context";
 
 const PROMPT_LABEL = "> WHO_SENT_YOU: ";
-const TYPING_SPEED = 35;
-const INACTIVITY_TIMEOUT = 10_000;
-const APPEAR_DELAY = 1200;
+const TYPING_SPEED = 25;
+const INACTIVITY_TIMEOUT = 12_000;
 
 export default function BriefingPrompt() {
   const { status, submit, skip, startPrompting } = useBriefing();
@@ -15,25 +14,20 @@ export default function BriefingPrompt() {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const [visible, setVisible] = useState(false);
   const [typedLabel, setTypedLabel] = useState("");
   const [labelDone, setLabelDone] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [dismissing, setDismissing] = useState(false);
 
-  // Appear after delay
+  // Start prompting immediately on mount
   useEffect(() => {
     if (status !== "idle") return;
-    const timer = setTimeout(() => {
-      setVisible(true);
-      startPrompting();
-    }, APPEAR_DELAY);
-    return () => clearTimeout(timer);
+    startPrompting();
   }, [status, startPrompting]);
 
-  // Typewriter for label
+  // Typewriter for label — input is already focusable during this
   useEffect(() => {
-    if (!visible || status !== "prompting") return;
+    if (status !== "prompting") return;
     let i = 0;
     const interval = setInterval(() => {
       i++;
@@ -41,11 +35,17 @@ export default function BriefingPrompt() {
       if (i >= PROMPT_LABEL.length) {
         clearInterval(interval);
         setLabelDone(true);
-        inputRef.current?.focus();
       }
     }, TYPING_SPEED);
     return () => clearInterval(interval);
-  }, [visible, status]);
+  }, [status]);
+
+  // Auto-focus input as soon as status is prompting
+  useEffect(() => {
+    if (status === "prompting") {
+      inputRef.current?.focus();
+    }
+  }, [status]);
 
   // Inactivity timeout — starts after label finishes typing, resets on keypress
   const resetTimeout = useCallback(() => {
@@ -98,7 +98,7 @@ export default function BriefingPrompt() {
     resetTimeout();
   };
 
-  const showPrompt = status === "prompting" && visible;
+  const showPrompt = status === "prompting";
 
   return (
     <AnimatePresence>
@@ -119,30 +119,34 @@ export default function BriefingPrompt() {
             <span className="text-terminal-muted whitespace-pre">
               {typedLabel}
             </span>
-            {labelDone && (
-              <span className="relative">
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  className="bg-transparent text-paper-text outline-none caret-transparent w-[200px] md:w-[300px]"
-                  autoComplete="off"
-                  spellCheck={false}
-                  aria-label="Who sent you here?"
-                />
-                {/* Blinking block cursor — tracks input length */}
-                <span
-                  className="pointer-events-none absolute top-0 left-0 inline-block h-[1.1em] w-[0.6em] bg-crimson-accent animate-blink"
-                  style={{ transform: `translateX(${inputValue.length}ch)` }}
-                />
-              </span>
-            )}
-            {!labelDone && (
-              <span className="inline-block w-[0.6em] h-[1.1em] bg-crimson-accent animate-blink" />
-            )}
+            <span className="relative">
+              <input
+                ref={inputRef}
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="bg-transparent text-paper-text outline-none focus-visible:outline-none caret-transparent w-[200px] md:w-[300px]"
+                autoComplete="off"
+                spellCheck={false}
+                aria-label="Who sent you here?"
+              />
+              {/* Blinking block cursor — tracks input length */}
+              <span
+                className="pointer-events-none absolute top-0 left-0 inline-block h-[1.1em] w-[0.6em] bg-crimson-accent animate-blink"
+                style={{ transform: `translateX(${inputValue.length}ch)` }}
+              />
+            </span>
           </div>
+          {/* Skip hint */}
+          <motion.span
+            className="mt-2 block font-mono text-xs text-terminal-muted/50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: labelDone ? 1 : 0 }}
+            transition={{ duration: 0.4, delay: 0.3 }}
+          >
+            [esc to skip]
+          </motion.span>
         </motion.div>
       )}
     </AnimatePresence>
