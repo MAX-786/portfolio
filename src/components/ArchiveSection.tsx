@@ -1,11 +1,12 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { motion, useInView, useMotionValue, useSpring } from "framer-motion";
+import { motion, useInView, useMotionValue, useSpring, AnimatePresence } from "framer-motion";
 import { ARCHIVE } from "@/lib/archive";
 import StackFingerprint from "./StackFingerprint";
 
 const SPRING_CONFIG = { stiffness: 200, damping: 25, mass: 0.5 };
+const VISIBLE_COUNT = 2;
 
 function CursorPreview({ title, domain, visible }: { title: string; domain: string; visible: boolean }) {
   return (
@@ -35,6 +36,7 @@ export default function ArchiveSection() {
   const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-5%" });
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [expanded, setExpanded] = useState(false);
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -46,14 +48,15 @@ export default function ArchiveSection() {
     mouseY.set(e.clientY - 70);
   };
 
+  const visibleEntries = expanded ? ARCHIVE : ARCHIVE.slice(0, VISIBLE_COUNT);
+  const hasMore = ARCHIVE.length > VISIBLE_COUNT;
+
   return (
     <section ref={ref} className="relative px-6 py-32 md:px-16 lg:px-24" data-cursor-zone="archive">
-      {/* Section label */}
       <h2 className="mb-16 font-mono text-xs uppercase tracking-[0.3em] text-paper-text/40">
         [ 04 :: ARCHIVE ]
       </h2>
 
-      {/* Table header */}
       <div className="mb-4 grid grid-cols-[100px_1fr_1fr_40px] gap-4 border-b border-terminal-muted/30 pb-4 font-mono text-xs uppercase tracking-[0.2em] text-paper-text/30 md:grid-cols-[120px_1fr_200px_60px]">
         <span>Date</span>
         <span>Title</span>
@@ -61,42 +64,54 @@ export default function ArchiveSection() {
         <span className="text-right">Link</span>
       </div>
 
-      {/* Table rows */}
       <div
         onMouseMove={handleMouseMove}
         onMouseLeave={() => setHoveredIndex(null)}
       >
-        {ARCHIVE.map((entry, i) => (
-          <motion.a
-            key={entry.title}
-            href={entry.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group grid grid-cols-[100px_1fr_1fr_40px] gap-4 border-b border-terminal-muted/10 py-5 font-mono text-sm transition-colors duration-300 md:grid-cols-[120px_1fr_200px_60px]"
-            style={{
-              opacity: hoveredIndex === null || hoveredIndex === i ? 1 : 0.2,
-              transition: "opacity 0.3s ease",
-            }}
-            onMouseEnter={() => setHoveredIndex(i)}
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ duration: 0.4, delay: i * 0.05 }}
-            data-cursor="expand"
-          >
-            <span className="text-terminal-muted">{entry.date}</span>
-            <span className="text-paper-text">{entry.title}</span>
-            <span className="hidden text-terminal-muted md:block">{entry.domain}</span>
-            <span className="text-right text-terminal-muted transition-colors group-hover:text-paper-text">
-              ↗
-            </span>
-          </motion.a>
-        ))}
+        <AnimatePresence initial={false}>
+          {visibleEntries.map((entry, i) => (
+            <motion.a
+              key={entry.title}
+              href={entry.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group grid grid-cols-[100px_1fr_1fr_40px] gap-4 border-b border-terminal-muted/10 py-5 font-mono text-sm transition-colors duration-300 md:grid-cols-[120px_1fr_200px_60px]"
+              style={{
+                opacity: hoveredIndex === null || hoveredIndex === i ? 1 : 0.2,
+                transition: "opacity 0.3s ease",
+              }}
+              onMouseEnter={() => setHoveredIndex(i)}
+              initial={{ opacity: 0, height: 0 }}
+              animate={isInView ? { opacity: 1, height: "auto" } : { opacity: 0, height: 0 }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3, delay: i < VISIBLE_COUNT ? i * 0.05 : (i - VISIBLE_COUNT) * 0.03 }}
+              data-cursor="expand"
+            >
+              <span className="text-terminal-muted">{entry.date}</span>
+              <span className="text-paper-text">{entry.title}</span>
+              <span className="hidden text-terminal-muted md:block">{entry.domain}</span>
+              <span className="text-right text-terminal-muted transition-colors group-hover:text-paper-text">
+                ↗
+              </span>
+            </motion.a>
+          ))}
+        </AnimatePresence>
       </div>
 
-      {/* Live Stack Fingerprint */}
+      {hasMore && (
+        <button
+          onClick={() => setExpanded((v) => !v)}
+          className="mt-4 font-mono text-xs uppercase tracking-[0.2em] text-terminal-muted transition-colors hover:text-paper-text"
+          data-cursor="expand"
+        >
+          {expanded
+            ? `[ − collapse ${ARCHIVE.length - VISIBLE_COUNT} entries ]`
+            : `[ + ${ARCHIVE.length - VISIBLE_COUNT} more entries ]`}
+        </button>
+      )}
+
       <StackFingerprint />
 
-      {/* Cursor-following preview card */}
       <motion.div
         className="pointer-events-none fixed top-0 left-0 z-50 hidden md:block"
         style={{ x: previewX, y: previewY }}
