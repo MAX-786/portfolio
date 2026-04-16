@@ -1,8 +1,20 @@
 import AnthropicBedrock from "@anthropic-ai/bedrock-sdk";
+import Redis from "ioredis";
 
-// In-memory cache (works in dev; swap for Upstash Redis in production)
-const cache = new Map<string, { data: string; expires: number }>();
-const CACHE_TTL = 86_400_000; // 24 hours in ms
+const CACHE_TTL = 86_400; // 24 hours in seconds (for Redis EX)
+const CACHE_PREFIX = "briefing:cache:";
+
+const memCache = new Map<string, { data: string; expires: number }>();
+
+let redis: Redis | null = null;
+function getRedis(): Redis | null {
+  if (redis) return redis;
+  const url = process.env.REDIS_URL;
+  if (!url) return null;
+  redis = new Redis(url, { maxRetriesPerRequest: 1, lazyConnect: true });
+  redis.on("error", () => {});
+  return redis;
+}
 
 const SKIP_INPUTS = new Set([
   "nobody",
@@ -45,18 +57,32 @@ function normalizeInput(input: string): string {
   return input.toLowerCase().trim().replace(/\s+/g, "-");
 }
 
-function getCached(key: string): string | null {
-  const entry = cache.get(key);
+async function getCached(key: string): Promise<string | null> {
+  const redisKey = `${CACHE_PREFIX}${key}`;
+  const client = getRedis();
+  if (client) {
+    try {
+      const val = await client.get(redisKey);
+      if (val) return val;
+    } catch { /* fall through to memory */ }
+  }
+  const entry = memCache.get(key);
   if (!entry) return null;
   if (Date.now() > entry.expires) {
-    cache.delete(key);
+    memCache.delete(key);
     return null;
   }
   return entry.data;
 }
 
-function setCache(key: string, data: string) {
-  cache.set(key, { data, expires: Date.now() + CACHE_TTL });
+async function setCache(key: string, data: string) {
+  memCache.set(key, { data, expires: Date.now() + CACHE_TTL * 1000 });
+  const client = getRedis();
+  if (client) {
+    try {
+      await client.set(`${CACHE_PREFIX}${key}`, data, "EX", CACHE_TTL);
+    } catch { /* silent */ }
+  }
 }
 
 function looksLikeCompany(input: string): boolean {
@@ -145,7 +171,7 @@ export async function POST(request: Request) {
   }
 
   const cacheKey = `briefing:${normalizeInput(input)}`;
-  const cached = getCached(cacheKey);
+  const cached = await getCached(cacheKey);
 
   if (cached) {
     const stream = new ReadableStream({
@@ -234,17 +260,17 @@ export async function POST(request: Request) {
               const phase2Json = JSON.stringify(phase2Data);
 
               const merged = { ...phase1Data, ...phase2Data };
-              setCache(cacheKey, JSON.stringify(merged));
+              await setCache(cacheKey, JSON.stringify(merged));
 
               controller.enqueue(encoder.encode(`data: ${phase2Json}\n\n`));
             } else {
-              setCache(cacheKey, phase1Json);
+              await setCache(cacheKey, phase1Json);
             }
           } else {
-            setCache(cacheKey, phase1Json);
+            await setCache(cacheKey, phase1Json);
           }
         } else {
-          setCache(cacheKey, phase1Json);
+          await setCache(cacheKey, phase1Json);
         }
 
         controller.enqueue(encoder.encode("data: [DONE]\n\n"));

@@ -52,6 +52,13 @@ export function BriefingProvider({ children }: { children: ReactNode }) {
   const submit = useCallback(async (input: string) => {
     setStatus("generating");
 
+    // Fire-and-forget log
+    fetch("/api/briefing/log", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ input }),
+    }).catch(() => {});
+
     try {
       const res = await fetch("/api/briefing", {
         method: "POST",

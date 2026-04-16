@@ -99,7 +99,7 @@ export default function SprintLogSection() {
   const isInView = useInView(ref, { once: true, margin: "-5%" });
 
   return (
-    <section ref={ref} className="relative px-6 py-32 md:px-16 lg:px-24">
+    <section ref={ref} className="relative px-6 py-32 md:px-16 lg:px-24" data-cursor-zone="sprint">
       {/* Section header */}
       <div className="mb-6 flex items-end justify-between">
         <h2 className="font-mono text-xs uppercase tracking-[0.3em] text-paper-text/40">

@@ -16,7 +16,7 @@ export default function ProjectShowcase() {
   const x = useTransform(scrollYProgress, [0, 1], ["0vw", `-${(panelCount - 1) * 100}vw`]);
 
   return (
-    <section ref={sectionRef} style={{ height: `${panelCount * 100}vh` }} className="relative">
+    <section ref={sectionRef} style={{ height: `${panelCount * 100}vh` }} className="relative" data-cursor-zone="projects">
       {/* Horizontal scroll container */}
       <div className="sticky top-0 h-screen overflow-hidden">
         <motion.div className="flex h-full" style={{ x }}>

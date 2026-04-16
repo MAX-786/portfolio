@@ -26,6 +26,7 @@ export default function ContactFooter() {
       ref={sectionRef}
       className="relative flex h-screen flex-col items-center justify-center overflow-hidden bg-paper-text"
       style={{ y }}
+      data-cursor-zone="contact"
     >
       {/* Noise texture behind the text mask */}
       <svg

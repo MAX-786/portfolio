@@ -77,7 +77,10 @@ function ScrambleLoader({ base, isActive }: { base: string; isActive: boolean })
   const [displayed, setDisplayed] = useState(base);
 
   useEffect(() => {
-    if (!isActive) { setDisplayed(base); return; }
+    if (!isActive) {
+      const rAF = requestAnimationFrame(() => setDisplayed(base));
+      return () => cancelAnimationFrame(rAF);
+    }
     const interval = setInterval(() => {
       setDisplayed(
         base.split("").map(c =>
@@ -114,7 +117,7 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative h-[200vh]">
+    <section ref={sectionRef} className="relative h-[200vh]" data-cursor-zone="hero">
       <div className="sticky top-0 flex h-screen flex-col items-center justify-center overflow-hidden">
         {/* Background code marquee */}
         <motion.div

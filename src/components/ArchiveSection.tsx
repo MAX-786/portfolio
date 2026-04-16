@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { motion, useInView, useMotionValue, useSpring } from "framer-motion";
 import { ARCHIVE } from "@/lib/archive";
+import StackFingerprint from "./StackFingerprint";
 
 const SPRING_CONFIG = { stiffness: 200, damping: 25, mass: 0.5 };
 
@@ -46,7 +47,7 @@ export default function ArchiveSection() {
   };
 
   return (
-    <section ref={ref} className="relative px-6 py-32 md:px-16 lg:px-24">
+    <section ref={ref} className="relative px-6 py-32 md:px-16 lg:px-24" data-cursor-zone="archive">
       {/* Section label */}
       <h2 className="mb-16 font-mono text-xs uppercase tracking-[0.3em] text-paper-text/40">
         [ 04 :: ARCHIVE ]
@@ -91,6 +92,9 @@ export default function ArchiveSection() {
           </motion.a>
         ))}
       </div>
+
+      {/* Live Stack Fingerprint */}
+      <StackFingerprint />
 
       {/* Cursor-following preview card */}
       <motion.div

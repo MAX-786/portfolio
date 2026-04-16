@@ -52,6 +52,7 @@ function IdentityPayload() {
   const { objective, status } = useBriefing();
 
   const prevObjectiveRef = useRef<string | null>(null);
+  const phase2TimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showPhase2Dot, setShowPhase2Dot] = useState(false);
 
   const displayedObjective = (status === "done" && objective) ? objective : DEFAULT_OBJECTIVE;
@@ -61,9 +62,17 @@ function IdentityPayload() {
     const isPhase2 = prevObjectiveRef.current !== null && prevObjectiveRef.current !== objective;
     prevObjectiveRef.current = objective;
     if (!isPhase2) return;
-    setShowPhase2Dot(true);
-    const timer = setTimeout(() => setShowPhase2Dot(false), 2000);
-    return () => clearTimeout(timer);
+
+    if (phase2TimerRef.current) clearTimeout(phase2TimerRef.current);
+
+    const rAF = requestAnimationFrame(() => {
+      setShowPhase2Dot(true);
+      phase2TimerRef.current = setTimeout(() => setShowPhase2Dot(false), 2000);
+    });
+    return () => {
+      cancelAnimationFrame(rAF);
+      if (phase2TimerRef.current) clearTimeout(phase2TimerRef.current);
+    };
   }, [objective, status]);
 
   const allEntries = [
@@ -140,6 +149,7 @@ export default function AboutSection() {
       ref={sectionRef}
       className="relative min-h-screen px-6 py-32 md:px-16 lg:px-24"
       style={{ y, opacity }}
+      data-cursor-zone="about"
     >
       <h2 className="sr-only">About</h2>
       <div className="mx-auto grid max-w-7xl gap-16 md:grid-cols-2 md:gap-24">
