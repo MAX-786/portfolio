@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
@@ -10,6 +10,14 @@ interface TapeEntry {
   project: string;
   text: string;
   tags?: string[];
+  highlights?: string[];
+}
+
+interface PageResponse {
+  entries: TapeEntry[];
+  total: number;
+  hasMore: boolean;
+  nextPage: number | null;
 }
 
 function EntryCard({ entry, index }: { entry: TapeEntry; index: number }) {
@@ -22,7 +30,7 @@ function EntryCard({ entry, index }: { entry: TapeEntry; index: number }) {
       className="group relative grid gap-4 border-b border-terminal-muted/10 py-8 pl-4 md:grid-cols-[140px_1fr]"
       initial={{ opacity: 0, y: 20 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-      transition={{ duration: 0.4, delay: index * 0.03 }}
+      transition={{ duration: 0.4, delay: Math.min(index * 0.03, 0.3) }}
     >
       {/* Left: date + index */}
       <div className="flex items-start gap-4 md:flex-col md:gap-2">
@@ -48,6 +56,16 @@ function EntryCard({ entry, index }: { entry: TapeEntry; index: number }) {
         <p className="max-w-[60ch] font-mono text-sm leading-relaxed text-paper-text/80">
           {entry.text}
         </p>
+
+        {entry.highlights && entry.highlights.length > 0 && (
+          <ul className="mt-4 space-y-1 border-l border-terminal-muted/20 pl-3">
+            {entry.highlights.map((h, i) => (
+              <li key={i} className="font-mono text-xs leading-relaxed text-paper-text/50">
+                › {h}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       {/* Left border accent on hover */}
@@ -56,21 +74,80 @@ function EntryCard({ entry, index }: { entry: TapeEntry; index: number }) {
   );
 }
 
+function LoadingSpinner() {
+  return (
+    <div className="flex justify-center py-12">
+      <div className="flex gap-1">
+        {[0, 1, 2].map((i) => (
+          <motion.span
+            key={i}
+            className="inline-block h-1 w-1 rounded-full bg-terminal-muted"
+            animate={{ opacity: [0.2, 1, 0.2] }}
+            transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.2 }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function ProcessTapeClient() {
   const [entries, setEntries] = useState<TapeEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [total, setTotal] = useState(0);
+  const [nextPage, setNextPage] = useState<number | null>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const heroInView = useInView(heroRef, { once: true });
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    fetch("/api/process-tape")
-      .then((res) => res.json())
-      .then((data: TapeEntry[]) => {
-        setEntries(data);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+  const fetchPage = useCallback(async (page: number) => {
+    try {
+      const res = await fetch(`/api/process-tape?page=${page}&limit=10`);
+      const data: PageResponse = await res.json();
+      return data;
+    } catch {
+      return null;
+    }
   }, []);
+
+  // Initial load
+  useEffect(() => {
+    fetchPage(0).then((data) => {
+      if (data) {
+        setEntries(data.entries);
+        setTotal(data.total);
+        setNextPage(data.nextPage);
+      }
+      setLoading(false);
+    });
+  }, [fetchPage]);
+
+  // Infinite scroll sentinel
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const first = entries[0];
+        if (first.isIntersecting && nextPage !== null && !loadingMore) {
+          setLoadingMore(true);
+          fetchPage(nextPage).then((data) => {
+            if (data) {
+              setEntries((prev) => [...prev, ...data.entries]);
+              setNextPage(data.nextPage);
+            }
+            setLoadingMore(false);
+          });
+        }
+      },
+      { rootMargin: "200px" }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [nextPage, loadingMore, fetchPage]);
 
   return (
     <div className="min-h-screen">
@@ -114,10 +191,10 @@ export default function ProcessTapeClient() {
         >
           <div>
             <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-terminal-muted">
-              ENTRIES
+              DAYS LOGGED
             </div>
             <div className="mt-1 font-mono text-sm text-paper-text">
-              {loading ? "—" : entries.length}
+              {loading ? "—" : total}
             </div>
           </div>
           {entries.length > 0 && (
@@ -132,10 +209,10 @@ export default function ProcessTapeClient() {
               </div>
               <div>
                 <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-terminal-muted">
-                  EARLIEST
+                  SHOWN
                 </div>
                 <div className="mt-1 font-mono text-sm text-paper-text">
-                  {entries[entries.length - 1].date}
+                  {entries.length} / {total}
                 </div>
               </div>
             </>
@@ -165,6 +242,21 @@ export default function ProcessTapeClient() {
           </div>
         )}
 
+        {/* Infinite scroll sentinel */}
+        <div ref={sentinelRef} className="h-px" />
+
+        {/* Loading more indicator */}
+        {loadingMore && <LoadingSpinner />}
+
+        {/* End of tape */}
+        {!loading && !loadingMore && nextPage === null && entries.length > 0 && (
+          <div className="mt-8 text-center">
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper-text/20">
+              — end of tape —
+            </span>
+          </div>
+        )}
+
         {/* Footer nav */}
         <div className="mt-16 flex items-center justify-between border-t border-terminal-muted/20 pt-8">
           <Link
@@ -175,7 +267,7 @@ export default function ProcessTapeClient() {
             ← BACK_TO_INDEX
           </Link>
           <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper-text/20">
-            {entries.length} entries logged
+            {total} days logged
           </span>
         </div>
       </section>

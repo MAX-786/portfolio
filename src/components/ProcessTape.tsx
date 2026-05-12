@@ -21,12 +21,11 @@ function isStale(entries: TapeEntry[]): boolean {
   return (now.getTime() - latest.getTime()) / 86_400_000 > STALE_DAYS;
 }
 
-function TapeContent({ entries }: { entries: TapeEntry[] }) {
+function TapeContent({ entries, total }: { entries: TapeEntry[]; total: number }) {
   const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-5%" });
 
-  const visible = entries.slice(0, VISIBLE_COUNT);
-  const remaining = entries.length - VISIBLE_COUNT;
+  const remaining = total - VISIBLE_COUNT;
 
   return (
     <section ref={ref} className="relative px-6 py-32 md:px-16 lg:px-24" data-cursor-zone="about">
@@ -44,7 +43,7 @@ function TapeContent({ entries }: { entries: TapeEntry[] }) {
       </motion.p>
 
       <div className="border-t border-terminal-muted/30">
-        {visible.map((entry, i) => (
+        {entries.map((entry, i) => (
           <motion.div
             key={entry.date + entry.project}
             className="border-b border-terminal-muted/10 py-6"
@@ -84,13 +83,15 @@ function TapeContent({ entries }: { entries: TapeEntry[] }) {
 
 export default function ProcessTape() {
   const [entries, setEntries] = useState<TapeEntry[]>([]);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/process-tape")
+    fetch(`/api/process-tape?page=0&limit=${VISIBLE_COUNT}`)
       .then((res) => res.json())
-      .then((data: TapeEntry[]) => {
-        setEntries(data);
+      .then((data) => {
+        setEntries(data.entries ?? []);
+        setTotal(data.total ?? 0);
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -99,5 +100,5 @@ export default function ProcessTape() {
   if (loading) return null;
   if (entries.length === 0 || isStale(entries)) return null;
 
-  return <TapeContent entries={entries} />;
+  return <TapeContent entries={entries} total={total} />;
 }
