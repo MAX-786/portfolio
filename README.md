@@ -77,7 +77,16 @@ src/
 3. **Projects** — Horizontal scroll with full-viewport panels, background-clip text mask on hover
 4. **Archive** — Terminal table with hover-dim + cursor-following preview card
 5. **AI in a Day** — Sprint log of 7 one-shot AI tools with expand-on-hover
-6. **Contact** — Inverted background, noise-masked "CONNECT.", magnetic links
+6. **Process Tape** — Live feed of daily work logs from [MAX-786/process-tape](https://github.com/MAX-786/process-tape); preview of 2 latest entries on homepage, full infinite-scroll view at `/process-tape`
+7. **Contact** — Inverted background, noise-masked "CONNECT.", magnetic links
+
+## API Routes
+
+| Route | Description |
+|---|---|
+| `GET /api/process-tape?page=N&limit=K` | Paginated daily logs. Reads `meta.json` for the date index, fetches individual `logs/YYYY-MM-DD.json` files from the process-tape repo. Returns `{ entries, total, hasMore, nextPage }`. Redis-cached (meta: 1 hr, log files: 24 hr). |
+| `GET /api/github` | GitHub stats |
+| `GET /api/briefing` | AI briefing generation |
 
 ## Key Interactions
 
