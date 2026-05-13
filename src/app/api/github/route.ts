@@ -1,6 +1,8 @@
 import { getRedis } from "@/lib/redis";
 
 const GITHUB_USER = "MAX-786";
+const CACHE_KEY = "github:fingerprint:v6";
+const CACHE_TTL = 3600;
 
 interface GitHubEvent {
   type: string;
