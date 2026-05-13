@@ -1,18 +1,6 @@
-import Redis from "ioredis";
+import { getRedis } from "@/lib/redis";
 
 const GITHUB_USER = "MAX-786";
-const CACHE_KEY = "github:fingerprint:v6";
-const CACHE_TTL = 3600;
-
-let redis: Redis | null = null;
-function getRedis(): Redis | null {
-  if (redis) return redis;
-  const url = process.env.REDIS_URL;
-  if (!url) return null;
-  redis = new Redis(url, { maxRetriesPerRequest: 1, lazyConnect: true });
-  redis.on("error", () => {});
-  return redis;
-}
 
 interface GitHubEvent {
   type: string;

@@ -1,17 +1,7 @@
-import Redis from "ioredis";
+import { getRedis } from "@/lib/redis";
 
 const LOG_KEY = "briefing:log";
 const memLog: { input: string; ts: number }[] = [];
-
-let redis: Redis | null = null;
-function getRedis(): Redis | null {
-  if (redis) return redis;
-  const url = process.env.REDIS_URL;
-  if (!url) return null;
-  redis = new Redis(url, { maxRetriesPerRequest: 1, lazyConnect: true });
-  redis.on("error", () => {});
-  return redis;
-}
 
 function sanitize(raw: string): string {
   return raw.trim().slice(0, 200).replace(/[<>]/g, "");

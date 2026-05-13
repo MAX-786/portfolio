@@ -1,5 +1,5 @@
-import Redis from "ioredis";
 import { NextRequest } from "next/server";
+import { getRedis } from "@/lib/redis";
 
 const REPO = "MAX-786/process-tape";
 const META_CACHE_KEY = "process-tape:meta";
@@ -7,16 +7,6 @@ const LOG_CACHE_PREFIX = "process-tape:log:";
 const META_CACHE_TTL = 3600;   // 1 hour
 const LOG_CACHE_TTL = 86400;   // 24 hours — daily logs are immutable once written
 const DEFAULT_PAGE_SIZE = 10;
-
-let redis: Redis | null = null;
-function getRedis(): Redis | null {
-  if (redis) return redis;
-  const url = process.env.REDIS_URL;
-  if (!url) return null;
-  redis = new Redis(url, { maxRetriesPerRequest: 1, lazyConnect: true });
-  redis.on("error", () => {});
-  return redis;
-}
 
 interface DailyLog {
   date: string;

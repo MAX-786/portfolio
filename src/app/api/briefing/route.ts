@@ -1,20 +1,10 @@
 import AnthropicBedrock from "@anthropic-ai/bedrock-sdk";
-import Redis from "ioredis";
+import { getRedis } from "@/lib/redis";
 
 const CACHE_TTL = 86_400; // 24 hours in seconds (for Redis EX)
 const CACHE_PREFIX = "briefing:cache:";
 
 const memCache = new Map<string, { data: string; expires: number }>();
-
-let redis: Redis | null = null;
-function getRedis(): Redis | null {
-  if (redis) return redis;
-  const url = process.env.REDIS_URL;
-  if (!url) return null;
-  redis = new Redis(url, { maxRetriesPerRequest: 1, lazyConnect: true });
-  redis.on("error", () => {});
-  return redis;
-}
 
 const SKIP_INPUTS = new Set([
   "nobody",
