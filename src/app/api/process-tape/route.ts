@@ -4,9 +4,14 @@ import { getRedis } from "@/lib/redis";
 const REPO = "MAX-786/process-tape";
 const META_CACHE_KEY = "process-tape:meta";
 const LOG_CACHE_PREFIX = "process-tape:log:";
-const META_CACHE_TTL = 3600;   // 1 hour
-const LOG_CACHE_TTL = 86400;   // 24 hours — daily logs are immutable once written
+const META_CACHE_TTL = 300;    // 5 minutes — new days appear quickly
+const LOG_CACHE_TTL = 86400;   // 24 hours — past logs are immutable
+const TODAY_LOG_CACHE_TTL = 300; // 5 minutes — today's log is still being written
 const DEFAULT_PAGE_SIZE = 10;
+
+function getTodayUTC(): string {
+  return new Date().toISOString().slice(0, 10);
+}
 
 interface DailyLog {
   date: string;
@@ -94,7 +99,8 @@ async function fetchLogEntry(date: string): Promise<TapeEntry | null> {
     };
     if (client) {
       try {
-        await client.set(cacheKey, JSON.stringify(entry), "EX", LOG_CACHE_TTL);
+        const ttl = date === getTodayUTC() ? TODAY_LOG_CACHE_TTL : LOG_CACHE_TTL;
+        await client.set(cacheKey, JSON.stringify(entry), "EX", ttl);
       } catch { /* silent */ }
     }
     return entry;
@@ -110,6 +116,19 @@ export async function GET(request: NextRequest) {
     20,
     Math.max(1, parseInt(searchParams.get("limit") ?? String(DEFAULT_PAGE_SIZE), 10))
   );
+
+  // ?revalidate=1 + correct secret flushes all process-tape Redis keys immediately
+  const revalidate = searchParams.get("revalidate") === "1";
+  const secret = request.headers.get("x-log-secret");
+  if (revalidate && secret === process.env.LOG_SECRET) {
+    const client = getRedis();
+    if (client) {
+      try {
+        const keys = await client.keys("process-tape:*");
+        if (keys.length) await client.del(...keys);
+      } catch { /* silent */ }
+    }
+  }
 
   const meta = await fetchMeta();
   if (!meta) {
